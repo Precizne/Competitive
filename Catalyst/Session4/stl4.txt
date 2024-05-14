@@ -1,0 +1,39 @@
+->QA Session
+
+  Codeforces 1833A 
+  https://codeforces.com/contest/1833/problem/A
+
+  Smallest Greater Element on Right Side
+  https://www.geeksforgeeks.org/smallest-greater-element-on-right-side
+
+  More Questions
+
+->Containers
+
+  **Deque
+  **Priority Queue
+  *Stack
+  *Queue
+
+  **Set
+  Map
+  **Multi Set
+  *Multi Map
+
+  **Unordered Set
+  Unordered Map
+  **Unordered Multi Set
+  *Unordered Multi Map
+
+  ** -> Explaination, Questions and Usage etc
+  * -> Just Introduction
+  () -> Recap
+
+->Images
+  https://www.geeksforgeeks.org/containers-cpp-stl
+
+->Main Objectives:
+  -Where to use Which Containers
+  -Advantages
+  -Disadvantages
+  -Use Cases

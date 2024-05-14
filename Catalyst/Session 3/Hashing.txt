@@ -1,0 +1,36 @@
+0)Quiz -10 min
+
+1)Array Hashing - 10 min 
+
+https://codeforces.com/problemset/problem/469/A		-10 min
+
+https://codeforces.com/problemset/problem/1520/D	-10 min
+
+2)Maps/Unordered_map  - 30 min 
+
+[]
+begin() 
+end()
+size() 
+empty()
+pair insert(keyvalue, mapvalue) 
+erase(iterator position)
+erase(const g)
+clear()
+etc(jitna half hour me hojye)
+
+3)distinguish btw 3 of them ....complexity  --10 min
+
+questions :
+
+https://codeforces.com/contest/855/problem/A --20 min
+
+https://www.codechef.com/problems/TOTR  --20 min
+
+4) Counter  & linked-hashmap(feature of java)  - 15 min
+
+a) tortoise and hare
+
+b) alice bob playing cards
+
+
