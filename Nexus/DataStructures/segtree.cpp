@@ -7,13 +7,13 @@ public:
    int n;
    vector<int> tree;
 
-   SegmentTree(vector<int>& arr) {
+   SegmentTree(vector<int> arr) {
       n = arr.size();
       tree.resize(2 * n);
       build(arr);
    }
 
-   void build(vector<int>& arr) {
+   void build(vector<int> arr) {
       for(int i = 0; i < n; i++) {
          tree[n + i] = arr[i];
       }

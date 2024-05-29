@@ -1,16 +1,13 @@
 #include <bits/stdc++.h>
- 
-#pragma GCC optimize("Ofast")
-#pragma GCC optimize("unroll-loops")
-#pragma GCC target("avx2")
+
+#pragma GCC optimize("Ofast,unroll-loops")
+#pragma GCC target("avx2,bmi,bmi2,popcnt,lzcnt")
  
 #define Precizne ios_base::sync_with_stdio(false); cin.tie(nullptr);
-
 #define int long long
-#define uint unsigned long long
+#define uint unsigned int
 #define INF(t) numeric_limits<t>::max()
 #define endl "\n"
-#define trc(x) cerr << #x << " => " << x << endl
  
 using namespace std;
 
