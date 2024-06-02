@@ -12,7 +12,6 @@
 using namespace std;
 
 void zero() {
-
 }
 
 signed main() {
@@ -24,7 +23,7 @@ signed main() {
       freopen("output.txt", "w", stdout);
       freopen("error.txt", "w", stderr);
    #endif
-
+   
    int progress = 1;
    cin >> progress;
    for(int p = 1; p <= progress; p++) {

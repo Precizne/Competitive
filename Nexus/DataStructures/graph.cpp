@@ -22,10 +22,10 @@ public:
    }
 
    void trace() {
-      for(int i = 0; i < vtx; i++) {
-         cerr << i << " : ";
-         for(auto j : adj[i]) {
-            cerr << j << " ";
+      for(int u = 0; u < vtx; u++) {
+         cerr << u << " : ";
+         for(auto v : adj[u]) {
+            cerr << v << " ";
          }
          cerr << endl;
       }
