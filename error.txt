@@ -1,2 +1,2 @@
 Case #1: 
-Time: 0.000051 secs
+Time: 0.000054 secs

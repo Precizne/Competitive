@@ -3,7 +3,7 @@
 #pragma GCC optimize("Ofast,unroll-loops")
 #pragma GCC target("avx2,bmi,bmi2,popcnt,lzcnt")
  
-#define Precizne ios_base::sync_with_stdio(false); cin.tie(nullptr);
+#define Precizne cin.tie(nullptr) -> sync_with_stdio(false);
 #define int long long
 #define uint unsigned int
 #define INF(t) numeric_limits<t>::max()
@@ -12,7 +12,6 @@
 using namespace std;
 
 void zero() {
-
 }
 
 signed main() {
@@ -24,7 +23,7 @@ signed main() {
       freopen("output.txt", "w", stdout);
       freopen("error.txt", "w", stderr);
    #endif
-
+   
    int progress = 1;
    cin >> progress;
    for(int p = 1; p <= progress; p++) {
@@ -39,7 +38,7 @@ signed main() {
       auto end = chrono::high_resolution_clock::now();
       auto elapsed = chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
       cerr << fixed << "Time: " << elapsed.count() * 1e-9 << " secs" << endl;
-	#endif
+   #endif
  
    return 0;
 }
