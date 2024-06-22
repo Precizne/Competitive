@@ -12,7 +12,7 @@ void sieve() {
       spf[i] = i;
    }
    for(int i = 2; i <= MAXN; i++) {
-      if(spf[i] == i) {
+   if(spf[i] == i) {
          // pri.push_back(i);
          for(int j = 2 * i; j <= MAXN; j += i) {
             spf[j] = min(spf[j], i);
@@ -150,4 +150,14 @@ vector<int> manacher(string s) {
    }
    auto res = manacher_odd(t + "#");
    return vector<int>(begin(res) + 1, end(res) - 1);
+}
+
+// n - Dimension Vector
+
+template<class... Args>
+auto vec(size_t n, Args&&... args) {
+   if constexpr(sizeof...(args) == 1)
+	   return vector(n, args...);
+   else
+	   return vector(n, vec(args...));
 }

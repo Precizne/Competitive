@@ -12,6 +12,21 @@
 using namespace std;
 
 void zero() {
+   int n = 10, k = 5, v = 0;
+   vector<int> a(n);
+   for(auto& i : a) {
+      i = k - v;
+      v++;
+   }
+   sort(a.begin(), a.end());
+   int idx = lower_bound(a.begin(), a.end(), k) - a.begin();
+   if(idx == n || a[idx] != k) {
+      cout << "NO" << endl;
+      return;
+   }
+   else {
+      cout << "YES" << endl;
+   }
 }
 
 signed main() {
