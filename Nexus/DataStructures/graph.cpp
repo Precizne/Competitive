@@ -21,13 +21,7 @@ public:
       adj[v].push_back(u);
    }
 
-   void trace() {
-      for(int u = 0; u < vtx; u++) {
-         cerr << u << " : ";
-         for(auto v : adj[u]) {
-            cerr << v << " ";
-         }
-         cerr << endl;
-      }
+   void reset() {
+      vst.assign(vtx, false);
    }
 };

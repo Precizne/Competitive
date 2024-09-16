@@ -4,7 +4,7 @@ using namespace std;
 
 // Smallest Prime Factor
 
-const int MAXN = 1e6 + 1;
+const int MAXN = 1e6;
 vector<int> spf(MAXN + 1);
 // vector<int> pri;
 void sieve() {
@@ -35,7 +35,7 @@ vector<int> fvec(int x) {
 map<int, int> fmap(int x) {
    map<int, int> f;
    while(x != 1) {
-      f[spf[x]]++;
+   f[spf[x]]++;
       x /= spf[x];
    }
    return f;

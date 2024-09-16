@@ -1,0 +1,82 @@
+#include <bits/stdc++.h>
+
+#pragma GCC optimize("Ofast,unroll-loops")
+#pragma GCC target("avx2,bmi,bmi2,popcnt,lzcnt")
+ 
+#define Precizne cin.tie(nullptr) -> sync_with_stdio(false);
+#define int long long
+#define uint unsigned int
+#define INF(t) numeric_limits<t>::max()
+#define endl "\n"
+
+using namespace std;
+
+class Solution {
+public:
+    int minTime(vector<int>& jobs, int n, int k, int smask, vector<vector<int>>& dp) {
+        if(smask == 0) {
+         return 0;
+        }
+      if(k == 0) {
+         return INT_MAX;
+      }
+        // if(dp[smask][k] != -1) {
+        //     return dp[smask][k];
+        // }
+        int ans = INT_MAX;
+        for(int mask = smask; mask; mask = (mask - 1) & smask) {
+            int curr = 0;
+            for(int i = 0; i < n; i++) {
+                curr += jobs[i] * (mask >> i & 1);
+            }
+            curr = max(curr, minTime(jobs, n, k - 1, ~mask & smask, dp));
+            ans = min(ans, curr);
+        }
+        cout << smask << " " << k << " " << ans << endl;
+        // return dp[smask][k] = ans;
+        return ans;
+    }
+
+    int minimumTimeRequired(vector<int>& jobs, int k) {
+        int n = jobs.size();
+        int smask = (1 << n) - 1;
+        vector dp(smask + 1, vector(k + 1, -1ll));
+        return minTime(jobs, n, k, smask, dp);
+    }
+};
+
+
+void zero() {
+   vector<int> job = {1, 2, 4, 7, 8};
+   int k = 2;
+   Solution().minimumTimeRequired(job, k);
+}
+
+signed main() {
+   Precizne
+   
+   #ifndef ONLINE_JUDGE
+      auto begin = chrono::high_resolution_clock::now();
+      freopen("input.txt", "r", stdin); 
+      freopen("output.txt", "w", stdout);
+      freopen("error.txt", "w", stderr);
+   #endif
+   
+   int progress = 1;
+   // cin >> progress;
+   for(int p = 1; p <= progress; p++) {
+      // cout << "Case #" << p << ": " << endl;
+      #ifndef ONLINE_JUDGE
+         cerr << "Case #" << p << ": " << endl;
+      #endif
+      zero();
+   }
+ 
+   #ifndef ONLINE_JUDGE
+      auto end = chrono::high_resolution_clock::now();
+      auto elapsed = chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+      cerr << fixed << "Time: " << elapsed.count() * 1e-9 << " secs" << endl;
+   #endif
+ 
+   return 0;
+}
