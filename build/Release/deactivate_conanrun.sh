@@ -1,0 +1,1 @@
+. "/home/Precizne/Void/Competitive/build/Release/deactivate_conanrunenv-release-x86_64.sh"

@@ -1,0 +1,1 @@
+. "/home/Precizne/Void/Competitive/build/Debug/conanrunenv-debug-x86_64.sh"

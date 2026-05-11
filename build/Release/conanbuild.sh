@@ -1,0 +1,1 @@
+. "/home/Precizne/Void/Competitive/build/Release/conanbuildenv-release-x86_64.sh"

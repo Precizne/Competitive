@@ -1,0 +1,3 @@
+/home/Precizne/Void/Competitive/build/Release/CMakeFiles/main.dir
+/home/Precizne/Void/Competitive/build/Release/CMakeFiles/edit_cache.dir
+/home/Precizne/Void/Competitive/build/Release/CMakeFiles/rebuild_cache.dir

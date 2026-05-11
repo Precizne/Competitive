@@ -8,80 +8,67 @@
 #define uint unsigned int
 #define INF(t) numeric_limits<t>::max()
 #define endl "\n"
- 
+
 using namespace std;
 
 class Graph {
 public:
    int vtx;
-   vector<vector<int>> adj;
+   vector<vector<pair<int, int>>> adj;
    vector<bool> vst;
-   vector<int> dp1;
-   vector<bool> dp2;
+   vector<int> spt;
 
    Graph(int n) {
       vtx = n;
-      adj.assign(n, vector<int>());
-      vst.assign(n, 0ll);
-      dp1.assign(n, false);
+      adj.assign(n, vector<pair<int, int>>());
+      vst.assign(n, false);
+      spt.assign(n, 0ll);
    }
 
-   void add(int u, int v) {
-      adj[u].push_back(v);
-      adj[v].push_back(u);
-   }
-
-   bool dfs1(int u, bool f) {
-      vst[u] = true;
-      bool p = false, q = true;
-      for(auto v : adj[u]) {
-         if(!vst[v]) {
-            bool x = dfs1(v, !f);
-            p |= x;
-            q &= x;
-            dp1[u] += x;
-         }
-      }
-      return (f && p) || (!f && q);
-   }
-
-   void dfs2(int u) {
-      vst[u] = true;
-      dp2[u];
+   void add(int u, int v, int w) {
+      adj[u].push_back({v, w});
    }
 
    void reset() {
       vst.assign(vtx, false);
+      spt.assign(vtx, 0ll);
    }
 
-   void trace() {
-      for(int u = 0; u < vtx; u++) {
-         cerr << u << " : ";
-         for(auto v : adj[u]) {
-            cerr << v << " ";
+   void dijkstra(int s) {
+      priority_queue<pair<int, int>> pq;
+      pq.push({0, s});
+      while(pq.size()) {
+         auto [d, u] = pq.top();
+         pq.pop();
+         spt[u] = max(spt[u], d);
+         if(!vst[u]) {
+            for(auto [v, w] : adj[u]) {
+               pq.push({d + w, v});
+            }
          }
-         cerr << endl;
+         vst[u] = true;
       }
    }
 };
 
 void zero() {
-   int n, q;
-   cin >> n >> q;
+   int n;
+   cin >> n;
+   vector<int> a(n);
+   for(auto& i : a) {
+      cin >> i;
+   }
    Graph g(n);
    for(int i = 0; i < n - 1; i++) {
-      int u, v;
-      cin >> u >> v;
-      g.add(u - 1, v - 1);
+      g.add(i + 1, i, a[i + 1]);
    }
-   g.dfs1(0, true);
-   g.reset();
-   g.dfs2(0);
-   while(q--) {
+   for(int i = 0; i < n; i++) {
       int x;
       cin >> x;
-      cout << (g.dp2[x - 1] ? "Ron" : "Hermione") << endl;
+      g.add(i, x - 1, 0ll);
    }
+   g.dijkstra(0);
+   cout << max(a[0], *max_element(g.spt.begin(), g.spt.end())) << endl;
 }
 
 signed main() {
@@ -93,11 +80,11 @@ signed main() {
       freopen("output.txt", "w", stdout);
       freopen("error.txt", "w", stderr);
    #endif
-   
+
    int progress = 1;
-   // cin >> progress;
+   cin >> progress;
    for(int p = 1; p <= progress; p++) {
-      // cout << "Case #" << p << ": " << endl;
+      // cout << "Case #" << p << ": ";
       #ifndef ONLINE_JUDGE
          cerr << "Case #" << p << ": " << endl;
       #endif

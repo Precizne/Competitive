@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/Precizne/Void/Competitive/build/Release",
+  "command": "g++ -m64 -O3 -DNDEBUG -std=gnu++26 -fPIE -Wall -Wextra -O3 -ffast-math -march=native -DNDEBUG -o CMakeFiles/main.dir/src/main.cpp.o -c /home/Precizne/Void/Competitive/src/main.cpp",
+  "file": "/home/Precizne/Void/Competitive/src/main.cpp",
+  "output": "/home/Precizne/Void/Competitive/build/Release/CMakeFiles/main.dir/src/main.cpp.o"
+}
+]
