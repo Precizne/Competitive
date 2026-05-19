@@ -1,0 +1,8 @@
+CompileFlags:
+  Add: [-std=c++26]
+  CompilationDatabase: build/Release
+
+Diagnostics:
+  UnusedIncludes: None
+  Suppress: 
+    - "unknown-pragmas"

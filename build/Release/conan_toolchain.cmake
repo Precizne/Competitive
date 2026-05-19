@@ -34,6 +34,10 @@ string(APPEND CONAN_SHARED_LINKER_FLAGS " -m64")
 string(APPEND CONAN_EXE_LINKER_FLAGS " -m64")
 
 
+########## 'rpath_link_flags' block #############
+# Pass -rpath-link pointing to all directories with runtime libraries
+
+
 ########## 'libcxx' block #############
 # Definition of libcxx from 'compiler.libcxx' setting, defining the
 # right CXX_FLAGS for that libcxx
@@ -86,6 +90,9 @@ foreach(config IN LISTS CMAKE_CONFIGURATION_TYPES)
     if(DEFINED CONAN_EXE_LINKER_FLAGS_${config})
       string(APPEND CMAKE_EXE_LINKER_FLAGS_${config}_INIT " ${CONAN_EXE_LINKER_FLAGS_${config}}")
     endif()
+    if(DEFINED CONAN_RC_FLAGS_${config})
+      string(APPEND CMAKE_RC_FLAGS_${config}_INIT " ${CONAN_RC_FLAGS_${config}}")
+    endif()
 endforeach()
 
 if(DEFINED CONAN_CXX_FLAGS)
@@ -99,6 +106,9 @@ if(DEFINED CONAN_SHARED_LINKER_FLAGS)
 endif()
 if(DEFINED CONAN_EXE_LINKER_FLAGS)
   string(APPEND CMAKE_EXE_LINKER_FLAGS_INIT " ${CONAN_EXE_LINKER_FLAGS}")
+endif()
+if(DEFINED CONAN_RC_FLAGS)
+  string(APPEND CMAKE_RC_FLAGS_INIT " ${CONAN_RC_FLAGS}")
 endif()
 if(DEFINED CONAN_OBJCXX_FLAGS)
   string(APPEND CMAKE_OBJCXX_FLAGS_INIT " ${CONAN_OBJCXX_FLAGS}")
@@ -125,7 +135,7 @@ endif()
 ########## 'find_paths' block #############
 # Define paths to find packages, programs, libraries, etc.
 if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/conan_cmakedeps_paths.cmake")
-  message(STATUS "Conan toolchain: Including CMakeDeps generated conan_cmakedeps_paths.cmake")
+  message(STATUS "Conan toolchain: Including CMakeConfigDeps generated conan_cmakedeps_paths.cmake")
   include("${CMAKE_CURRENT_LIST_DIR}/conan_cmakedeps_paths.cmake")
 else()
 
@@ -159,6 +169,13 @@ endif()
 
 ########## 'output_dirs' block #############
 # Definition of CMAKE_INSTALL_XXX folders
+
+# Ensure export(PACKAGE) honors CMAKE_EXPORT_PACKAGE_REGISTRY even if the
+# project sets cmake_minimum_required() lower than 3.15.
+cmake_policy(SET CMP0090 NEW)
+if(NOT DEFINED CMAKE_EXPORT_PACKAGE_REGISTRY)
+    set(CMAKE_EXPORT_PACKAGE_REGISTRY OFF)
+endif()
 
 set(CMAKE_INSTALL_BINDIR "bin")
 set(CMAKE_INSTALL_SBINDIR "bin")

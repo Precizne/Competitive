@@ -52,7 +52,8 @@ build cmake_object_order_depends_target_main: phony || .
 build CMakeFiles/main.dir/src/main.cpp.o: CXX_COMPILER__main_unscanned_Debug /home/Precizne/Void/Competitive/src/main.cpp || cmake_object_order_depends_target_main
   CONFIG = Debug
   DEP_FILE = CMakeFiles/main.dir/src/main.cpp.o.d
-  FLAGS = -m64 -g -std=gnu++26 -fPIE -Wall -Wextra -g -O0 -fno-omit-frame-pointer -fsanitize=address,undefined,leak
+  FLAGS = -m64 -g -std=gnu++26 -fPIE -Wall -Wextra -Wshadow -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter -g -O0 -fno-omit-frame-pointer -fsanitize=address,undefined,leak
+  INCLUDES = -I/home/Precizne/Void/Competitive/include
   LAUNCHER = /usr/bin/ccache 
   OBJECT_DIR = CMakeFiles/main.dir
   OBJECT_FILE_DIR = CMakeFiles/main.dir/src

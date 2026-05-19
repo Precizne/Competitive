@@ -1,7 +1,7 @@
 [
 {
   "directory": "/home/Precizne/Void/Competitive/build/Debug",
-  "command": "g++ -m64 -g -std=gnu++26 -fPIE -Wall -Wextra -g -O0 -fno-omit-frame-pointer -fsanitize=address,undefined,leak -o CMakeFiles/main.dir/src/main.cpp.o -c /home/Precizne/Void/Competitive/src/main.cpp",
+  "command": "g++ -I/home/Precizne/Void/Competitive/include -m64 -g -std=gnu++26 -fPIE -Wall -Wextra -Wshadow -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter -g -O0 -fno-omit-frame-pointer -fsanitize=address,undefined,leak -o CMakeFiles/main.dir/src/main.cpp.o -c /home/Precizne/Void/Competitive/src/main.cpp",
   "file": "/home/Precizne/Void/Competitive/src/main.cpp",
   "output": "/home/Precizne/Void/Competitive/build/Debug/CMakeFiles/main.dir/src/main.cpp.o"
 }

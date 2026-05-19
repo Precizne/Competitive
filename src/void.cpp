@@ -115,7 +115,7 @@ void prec() {
 }
 
 inline int nCr(int n, int r) {
-    if(n < r) {
+    if(n < 0 || r < 0 || n < r) {
         cerr << "ERROR: COMB DOESN'T EXIST!!! VERIFY CODE!!!" << endl;
         return 0;
     }

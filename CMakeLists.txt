@@ -37,7 +37,14 @@ endif()
 include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake OPTIONAL)
 
 # Flags
-add_compile_options(-Wall -Wextra)
+add_compile_options(
+  -Wall
+  -Wextra
+  -Wshadow
+  -Wno-sign-compare
+  -Wno-unused-variable
+  -Wno-unused-parameter
+)
 add_link_options(-fuse-ld=lld)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -60,4 +67,5 @@ endif()
 
 # Target
 add_executable(main src/main.cpp)
+target_include_directories(main PRIVATE include)
 target_link_libraries(main PRIVATE)

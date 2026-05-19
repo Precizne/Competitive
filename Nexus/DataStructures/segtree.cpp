@@ -1,90 +1,53 @@
 #include <bits/stdc++.h>
+#include "../../src/main.cpp"
 
-using namespace std;
+// ===================
+// INTERFACE CONTRACT
+// ===================
+template<typename T>
+concept SegmentTreeConfig = requires(typename T::Node n, typename T::Lazy l, int len) {
+    typename T::Node;
+    typename T::Lazy;
 
-// =======================
-// USER DEFINITIONS
-// =======================
+    { T::Node::identity() } -> std::same_as<typename T::Node>;
+    { T::Lazy::identity() } -> std::same_as<typename T::Lazy>;
 
-// Segment value
-struct Node {
-    int x, y;
+    { n == T::Node::identity() } -> std::convertible_to<bool>;
+    { l == T::Lazy::identity() } -> std::convertible_to<bool>;
 
-    Node(int x = 0, int y = 0)
-        : x(x), y(y) {}
-
-    static Node identity() {
-        return Node(0, 0);
-    }
+    { T::merge(n, n) } -> std::same_as<typename T::Node>;
+    { T::compose(l, l) } -> std::same_as<typename T::Lazy>;
+    { T::apply(l, n, len) } -> std::same_as<typename T::Node>;
 };
 
-// Merge
-Node operator+(const Node& a, const Node& b) {
-    return Node(
-        a.x + b.x,
-        a.y + b.y
-    );
-}
-
-// Lazy operation
-struct Lazy {
-    int add;
-
-    Lazy(int add = 0) : add(add) {}
-
-    bool isIdentity() const { return add == 0; }
-};
-
-// Apply lazy → node
-Node applyMapping(const Lazy& func, const Node& node, int len) {
-    return Node(
-        node.x + func.add * len,
-        node.y + func.add * len
-    );
-}
-
-// Compose lazy: new after old
-Lazy compose(const Lazy& newer, const Lazy& older) {
-    return Lazy(newer.add + older.add);
-}
-
-// Identity lazy
-Lazy lazyIdentity() {
-    return Lazy(0);
-}
-
-// =======================
-// SEGMENT TREE
-// =======================
-
+// =========================
+// CORE SEGMENT TREE ENGINE
+// =========================
+template<SegmentTreeConfig Config>
 class SegmentTree {
-public:
-    SegmentTree(const vector<Node>& input) {
-        n = input.size();
-        size = 1;
+    using Node = typename Config::Node;
+    using Lazy = typename Config::Lazy;
 
-        while (size < n) {
-            size <<= 1;
-        }
+public:
+    explicit SegmentTree(const vector<Node>& input) {
+        n = input.size();
+        size = bit_ceil(static_cast<unsigned int>(n));
 
         data.assign(2 * size, Node::identity());
-        lazy.assign(size, lazyIdentity());
+        lazy.assign(size, Lazy::identity());
         segLen.assign(2 * size, 0);
 
-        // build leaves
-        for (int i = 0; i < n; i++) {
+        for(int i = 0; i < n; i++) {
             data[size + i] = input[i];
             segLen[size + i] = 1;
         }
 
-        // build tree
-        for (int i = size - 1; i >= 1; i--) {
-            data[i] = data[2 * i] + data[2 * i + 1];
+        for(int i = size - 1; i >= 1; i--) {
+            data[i] = Config::merge(data[2 * i], data[2 * i + 1]);
             segLen[i] = segLen[2 * i] + segLen[2 * i + 1];
         }
     }
 
-    // range update [left, right]
     void update(int left, int right, Lazy func) {
         left += size;
         right += size;
@@ -95,34 +58,18 @@ public:
         pushPath(leftCopy);
         pushPath(rightCopy);
 
-        while (left <= right) {
-            if (left % 2 == 1) {
-                applyNode(left, func);
-                left++;
-            }
+        while(left <= right) {
+            if(left & 1) applyNode(left++, func);
+            if(!(right & 1)) applyNode(right--, func);
 
-            if (right % 2 == 0) {
-                applyNode(right, func);
-                right--;
-            }
-
-            left /= 2;
-            right /= 2;
+            left >>= 1;
+            right >>= 1;
         }
 
         buildPath(leftCopy);
         buildPath(rightCopy);
     }
 
-    // point update
-    void update(int pos, Lazy func) {
-        pos += size;
-        pushPath(pos);
-        applyNode(pos, func);
-        buildPath(pos);
-    }
-
-    // range query [left, right]
     Node query(int left, int right) {
         left += size;
         right += size;
@@ -133,263 +80,259 @@ public:
         Node resultLeft = Node::identity();
         Node resultRight = Node::identity();
 
-        while (left <= right) {
-            if (left % 2 == 1) {
-                resultLeft = resultLeft + data[left];
-                left++;
-            }
+        while(left <= right) {
+            if(left & 1) resultLeft = Config::merge(resultLeft, data[left++]);
+            if(!(right & 1)) resultRight = Config::merge(data[right--], resultRight);
 
-            if (right % 2 == 0) {
-                resultRight = data[right] + resultRight;
-                right--;
-            }
-
-            left /= 2;
-            right /= 2;
+            left >>= 1;
+            right >>= 1;
         }
 
-        return resultLeft + resultRight;
-    }
-
-    // point query
-    Node query(int pos) {
-        pos += size;
-        pushPath(pos);
-        return data[pos];
+        return Config::merge(resultLeft, resultRight);
     }
 
 private:
     int n;
     int size;
-
     vector<Node> data;
     vector<Lazy> lazy;
     vector<int> segLen;
 
-    void applyNode(int pos, const Lazy& func) {
-        data[pos] = applyMapping(func, data[pos], segLen[pos]);
+    inline void applyNode(int pos, const Lazy& func) {
+        data[pos] = Config::apply(func, data[pos], segLen[pos]);
 
-        if (pos < size) {
-            lazy[pos] = compose(func, lazy[pos]);
+        if(pos < size) lazy[pos] = Config::compose(func, lazy[pos]);
+    }
+
+    inline void push(int pos) {
+        if(!(lazy[pos] == Lazy::Identity())) {
+            applyNode((pos << 1), lazy[pos]);
+            applyNode((pos << 1) | 1, lazy[pos]);
+
+            lazy[pos] = Lazy::identity();
         }
     }
 
-    void push(int pos) {
-        if (!lazy[pos].isIdentity()) {
-            applyNode(2 * pos, lazy[pos]);
-            applyNode(2 * pos + 1, lazy[pos]);
-            lazy[pos] = lazyIdentity();
-        }
+    inline void pushPath(int pos) {
+        int height = std::countr_zero(static_cast<unsigned int>(size));
+
+        for(int h = height; h >= 1; h--) push(pos >> h);
     }
 
-    void pushPath(int pos) {
-        for (int height = __lg(size); height >= 1; height--) {
-            push(pos >> height);
-        }
-    }
-
-    void buildPath(int pos) {
-        while (pos > 1) {
+    inline void buildPath(int pos) {
+        while(pos > 1) {
             pos >>= 1;
-            data[pos] = applyMapping(lazy[pos], data[2 * pos] + data[2 * pos + 1], segLen[pos]);
+            data[pos] = Config::apply(
+                lazy[pos],
+                Config::merge(data[pos << 1], data[(pos << 1) | 1]),
+                segLen[pos]
+            );
         }
     }
 };
 
-// Range Add + Range Sum
+// =============================
+// PLUG-AND-PLAY CONFIGURATIONS
+// =============================
 
-namespace RARS {
+// 1. Range Mul-Add + Range Sum
+struct RMARS {
+    struct Node {
+        int val;
 
-// Node
-struct Node {
-    long long sum;
+        static Node identity() {
+            return Node{ 0 };
+        }
 
-    Node(long long sum = 0)
-        : sum(sum) {}
+        bool operator==(const Node&) const = default;
+    };
 
-    static Node identity() {
-        return Node(0);
+    struct Lazy {
+        int mul;
+        int add;
+
+        static Lazy identity() {
+            return Lazy{ 1, 0 };
+        }
+
+        bool operator==(const Lazy&) const = default;
+    };
+
+    static Node merge(const Node& a, const Node& b) {
+        return Node{ a.val + b.val };
+    }
+
+    static Node apply(const Lazy& f, const Node& node, int len) {
+        return Node{ node.val * f.mul + f.add * len };
+    }
+
+    static Lazy compose(const Lazy& newer, const Lazy& older) {
+        return Lazy{ newer.mul * older.mul, newer.mul * older.add + newer.add };
     }
 };
 
-Node operator+(const Node& a, const Node& b) {
-    return Node(a.sum + b.sum);
-}
+// 2. Range Add + Range Sum
+struct RARS {
+    struct Node {
+        int sum;
 
-// Lazy
-struct Lazy {
-    long long add;
-    Lazy(long long add = 0) : add(add) {}
+        static Node identity() {
+            return Node{ 0 };
+        }
 
-    bool isIdentity() const { return add == 0; }
-};
+        bool operator==(const Node&) const = default;
+    };
 
-Node applyMapping(const Lazy& f, const Node& node, int len) {
-    return Node(node.sum + f.add * len);
-}
+    struct Lazy {
+        int add;
 
-Lazy compose(const Lazy& f, const Lazy& g) {
-    return Lazy(f.add + g.add);
-}
+        static Lazy identity() {
+            return Lazy{ 0 };
+        }
 
-Lazy lazyIdentity() {
-    return Lazy(0);
-}
+        bool operator==(const Lazy&) const = default;
+    };
 
-} // namespace RARS;
+    static Node merge(const Node& a, const Node& b) {
+        return Node{ a.sum + b.sum };
+    }
 
-// Range Add + Range Max
+    static Node apply(const Lazy& f, const Node& node, int len) {
+        return Node{ node.sum + f.add * len };
+    }
 
-namespace RARM {
-
-struct Node {
-    long long mx;
-
-    Node(long long mx = LLONG_MIN)
-        : mx(mx) {}
-
-    static Node identity() {
-        return Node(LLONG_MIN);
+    static Lazy compose(const Lazy& newer, const Lazy& older) {
+        return Lazy{ newer.add + older.add };
     }
 };
 
-Node operator+(const Node& a, const Node& b) {
-    return Node(max(a.mx, b.mx));
-}
+// 3. Range Add + Range Max
+struct RARM {
+    struct Node {
+        int mx;
 
-struct Lazy {
-    long long add;
-    Lazy(long long add = 0) : add(add) {}
+        static Node identity() {
+            return Node{ -INF<int> };
+        }
 
-    bool isIdentity() const { return add == 0; }
-};
+        bool operator==(const Node&) const = default;
+    };
 
-Node applyMapping(const Lazy& f, const Node& node, int len) {
-    return Node(node.mx + f.add);
-}
+    struct Lazy {
+        int add;
 
-Lazy compose(const Lazy& f, const Lazy& g) {
-    return Lazy(f.add + g.add);
-}
+        static Lazy identity() {
+            return Lazy{ 0 };
+        }
 
-Lazy lazyIdentity() {
-    return Lazy(0);
-}
+        bool operator==(const Lazy&) const = default;
+    };
 
-} // namespace RARM;
+    static Node merge(const Node& a, const Node& b) {
+        return Node{ max(a.mx, b.mx) };
+    }
 
-// Range Add + Range Sum + Range Sum of Squares
+    static Node apply(const Lazy& f, const Node& node, int len) {
+        if(node.mx == INF<int>) return node;
 
-namespace RASS {
+        return Node{ node.mx + f.add };
+    }
 
-struct Node {
-    long long sum;
-    long long sq;
-
-    Node(long long sum = 0, long long sq = 0)
-        : sum(sum), sq(sq) {}
-
-    static Node identity() {
-        return Node(0, 0);
+    static Lazy compose(const Lazy& newer, const Lazy& older) {
+        return Lazy{ newer.add + older.add };
     }
 };
 
-Node operator+(const Node& a, const Node& b) {
-    return Node(
-        a.sum + b.sum,
-        a.sq + b.sq
-    );
-}
+// 4. Range Add + Range Sum-SumOfSquares
+struct RASS {
+    struct Node {
+        int sum;
+        int sq;
 
-struct Lazy {
-    long long add;
-    Lazy(long long add = 0) : add(add) {}
+        static Node identity() {
+            return Node{ 0, 0 };
+        }
 
-    bool isIdentity() const { return add == 0; }
-};
+        bool operator==(const Node&) const = default;
+    };
 
-Node applyMapping(const Lazy& f, const Node& node, int len) {
-    long long new_sum = node.sum + f.add * len;
-    long long new_sq = node.sq + 2 * f.add * node.sum + f.add * f.add * len;
+    struct Lazy {
+        int add;
 
-    return Node(new_sum, new_sq);
-}
+        static Lazy identity() {
+            return Lazy{0};
+        }
 
-Lazy compose(const Lazy& f, const Lazy& g) {
-    return Lazy(f.add + g.add);
-}
+        bool operator==(const Lazy&) const = default;
+    };
 
-Lazy lazyIdentity() {
-    return Lazy(0);
-}
-
-} // namespace RASS;
-
-// No Lazy + DP Transition
-
-namespace NLDP {
-
-// =======================
-// USER DEFINITIONS
-// =======================
-
-const int INF = (int)2e18;
-
-struct Node {
-    long long m[2][2];
-
-    Node() {
-        m[0][0] = 0;   m[0][1] = INF;
-        m[1][0] = INF; m[1][1] = 0;
+    static Node merge(const Node& a, const Node& b) {
+        return Node{ a.sum + b.sum, a.sq + b.sq };
     }
 
-    Node(long long a) {
-        m[0][0] = INF;
-        m[0][1] = a;
-        m[1][0] = 0;
-        m[1][1] = a;
+    static Node apply(const Lazy& f, const Node& node, int len) {
+        int new_sum = node.sum + f.add * len;
+        int new_sq = node.sq + 2LL * f.add * node.sum + f.add * f.add * len;
+
+        return Node{ new_sum, new_sq };
     }
 
-    static Node identity() {
-        return Node();
+    static Lazy compose(const Lazy& newer, const Lazy& older) {
+        return Lazy{ newer.add + older.add };
     }
 };
 
-Node operator+(const Node& a, const Node& b) {
-    Node res;
+// 5. No Lazy + DP Transition
+struct NLDP {
+    struct Node {
+        array<array<int, 2>, 2> m;
 
-    res.m[0][0] = res.m[0][1] = res.m[1][0] = res.m[1][1] = INF;
+        static Node identity() {
+            return Node{{{
+                { 0, INF<int> },
+                { INF<int>, 0 }
+            }}};
+        }
 
-    for(int i = 0; i < 2; ++i) {
-        for(int j = 0; j < 2; ++j) {
-            for(int k = 0; k < 2; ++k) {
-                res.m[i][j] = std::min(res.m[i][j], a.m[i][k] + b.m[k][j]);
+        static Node fromVal(int a) {
+            return Node{{{
+                { INF<int>, a },
+                { 0, a }
+            }}};
+        }
+
+        bool operator==(const Node&) const = default;
+    };
+
+    struct Lazy {
+        bool dummy;
+
+        static Lazy identity() { return Lazy{ true }; }
+
+        bool operator==(const Lazy&) const = default;
+    };
+
+    static Node merge(const Node& a, const Node& b) {
+        Node res;
+
+        for(int i = 0; i < 2; i++) {
+            for(int j = 0; j < 2; j++) {
+                res.m[i][j] = INF<int>;
+
+                for(int k = 0; k < 2; k++) {
+                    chkmin(res.m[i][j], a.m[i][k] + b.m[k][j]);
+                }
             }
         }
+
+        return res;
     }
 
-    return res;
-}
+    static Node apply(const Lazy& f, const Node& node, int len) {
+        return node;
+    }
 
-struct Lazy {
-    bool dummy;
-    Lazy() : dummy(true) {}
-    bool isIdentity() const { return true; }
+    static Lazy compose(const Lazy& newer, const Lazy& older) {
+        return Lazy{ true };
+    }
 };
-
-// Apply lazy → node
-Node applyMapping(const Lazy& func, const Node& node, int len) {
-    return node;
-}
-
-// Compose lazy
-Lazy compose(const Lazy& newer, const Lazy& older) {
-    return Lazy();
-}
-
-// Identity lazy
-Lazy lazyIdentity() {
-    return Lazy();
-}
-
-} // namespace NLDP;

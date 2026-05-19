@@ -32,7 +32,10 @@
     "testPresets": [
         {
             "name": "conan-release",
-            "configurePreset": "conan-release"
+            "configurePreset": "conan-release",
+            "execution": {
+                "jobs": 12
+            }
         }
     ]
 }

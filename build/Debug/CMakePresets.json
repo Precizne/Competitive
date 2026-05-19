@@ -32,7 +32,10 @@
     "testPresets": [
         {
             "name": "conan-debug",
-            "configurePreset": "conan-debug"
+            "configurePreset": "conan-debug",
+            "execution": {
+                "jobs": 12
+            }
         }
     ]
 }
