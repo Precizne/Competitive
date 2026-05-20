@@ -122,6 +122,7 @@ private:
     inline void buildPath(int pos) {
         while(pos > 1) {
             pos >>= 1;
+
             data[pos] = Config::apply(
                 lazy[pos],
                 Config::merge(data[pos << 1], data[(pos << 1) | 1]),

@@ -24,7 +24,6 @@ constexpr float EPS = 1e-9;
 #endif
 
 void zero() {
-    // Do you magic here
 }
 
 signed main() {
@@ -41,7 +40,7 @@ signed main() {
 #endif
 
     int progress = 1;
-    cin >> progress;
+    // cin >> progress;
     for(int p = 1; p <= progress; p++) {
 #ifndef ONLINE_JUDGE
         cerr << "Case #" << p << ": " << endl;

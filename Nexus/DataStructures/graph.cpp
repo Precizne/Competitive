@@ -116,16 +116,3 @@ int lca(int u, int v) {
     }
     return up[0][u];
 }
-
-// Coordinate Compression
-
-template<class T>
-vector<int> compress(vector<T> &a) {
-    vector<T> v = a;
-    sort(v.begin(), v.end());
-    v.erase(unique(v.begin(), v.end()), v.end());
-    vector<int> res(a.size());
-    for(int i = 0; i < (int)a.size(); i++)
-        res[i] = lower_bound(v.begin(), v.end(), a[i]) - v.begin();
-    return res;
-}
