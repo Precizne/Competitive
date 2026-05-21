@@ -177,33 +177,6 @@ using namespace __gnu_pbds;
 
 #define ordered_set tree<int, null_type,less<int>, rb_tree_tag,tree_order_statistics_node_update>
 
-// Prefix Rolling Double Hash
-
-pair<vector<int>, vector<int>> master_hash(vector<int>& a) {
-    const int MOD1 = 1e9 + 7;
-    const int MOD2 = 1e9 + 9;
-    const int BASE1 = 31;
-    const int BASE2 = 37;
-    
-    int hash1 = 0, hash2 = 0;
-    int power1 = 1, power2 = 1;
-    
-    vector<int> prefixHash1((int)a.size()), prefixHash2((int)a.size());
-    
-    for(int i = 0; i < (int)a.size(); ++i) {
-        hash1 = (hash1 + a[i] * power1) % MOD1;
-        hash2 = (hash2 + a[i] * power2) % MOD2;
-
-        prefixHash1[i] = hash1;
-        prefixHash2[i] = hash2;
-
-        power1 = (power1 * BASE1) % MOD1;
-        power2 = (power2 * BASE2) % MOD2;
-    }
-    
-    return {prefixHash1, prefixHash2};
-}
-
 // FFT
 
 const double PI = acos(-1);

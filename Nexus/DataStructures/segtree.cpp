@@ -4,26 +4,26 @@
 // ===================
 // INTERFACE CONTRACT
 // ===================
-template<typename T>
-concept SegmentTreeConfig = requires(typename T::Node n, typename T::Lazy l, int len) {
-    typename T::Node;
-    typename T::Lazy;
-
-    { T::Node::identity() } -> std::same_as<typename T::Node>;
-    { T::Lazy::identity() } -> std::same_as<typename T::Lazy>;
-
-    { n == T::Node::identity() } -> std::convertible_to<bool>;
-    { l == T::Lazy::identity() } -> std::convertible_to<bool>;
-
-    { T::merge(n, n) } -> std::same_as<typename T::Node>;
-    { T::compose(l, l) } -> std::same_as<typename T::Lazy>;
-    { T::apply(l, n, len) } -> std::same_as<typename T::Node>;
-};
+// template<typename T>
+// concept SegmentTreeConfig = requires(typename T::Node n, typename T::Lazy l, int len) {
+//     typename T::Node;
+//     typename T::Lazy;
+//
+//     { T::Node::identity() } -> std::same_as<typename T::Node>;
+//     { T::Lazy::identity() } -> std::same_as<typename T::Lazy>;
+//
+//     { n == T::Node::identity() } -> std::convertible_to<bool>;
+//     { l == T::Lazy::identity() } -> std::convertible_to<bool>;
+//
+//     { T::merge(n, n) } -> std::same_as<typename T::Node>;
+//     { T::compose(l, l) } -> std::same_as<typename T::Lazy>;
+//     { T::apply(l, n, len) } -> std::same_as<typename T::Node>;
+// };
 
 // =========================
 // CORE SEGMENT TREE ENGINE
 // =========================
-template<SegmentTreeConfig Config>
+template<class Config>
 class SegmentTree {
     using Node = typename Config::Node;
     using Lazy = typename Config::Lazy;
@@ -116,7 +116,9 @@ private:
     inline void pushPath(int pos) {
         int height = std::countr_zero(static_cast<unsigned int>(size));
 
-        for(int h = height; h >= 1; h--) push(pos >> h);
+        for(int h = height; h >= 1; h--) {
+            push(pos >> h);
+        }
     }
 
     inline void buildPath(int pos) {
