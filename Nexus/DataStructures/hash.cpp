@@ -139,6 +139,10 @@ private:
     }
 };
 
+
+// ===========================
+// Rabin-Karp String Matching
+// ===========================
 template <typename Iterable>
 vector<int> rabin_karp(const Iterable& text, const Iterable& pattern) {
     int n = text.size();
