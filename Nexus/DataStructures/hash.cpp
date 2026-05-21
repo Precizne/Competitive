@@ -12,15 +12,15 @@ using namespace std;
 //     { a[i] };
 // };
 
-// ======================================
-// Double Polynomial Rolling Prefix Hash
-// ======================================
-class DPPHash {
+// ============================================================
+// Random Double Polynomial Rolling Prefix Hash (Entropy Hash)
+// ============================================================
+class EntropyHash {
 public:
     using HashValue = pair<int, int>;
 
     template<typename Iterable>
-    explicit DPPHash(const Iterable& arr) : n(arr.size()) {
+    explicit EntropyHash(const Iterable& arr) : n(arr.size()) {
         init();
 
         H1.assign(n + 1, 0ll);
@@ -151,8 +151,8 @@ vector<int> rabin_karp(const Iterable& text, const Iterable& pattern) {
 
     if(m == 0 || m > n) return matches;
 
-    auto target_hash = DPPHash::get(pattern);
-    DPPHash text_hash(text);
+    auto target_hash = EntropyHash::get(pattern);
+    EntropyHash text_hash(text);
 
     for(int i = 0; i < n - m + 1; i++) {
         auto window_hash = text_hash.get(i, i + m - 1);
