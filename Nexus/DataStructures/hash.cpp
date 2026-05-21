@@ -103,8 +103,8 @@ private:
             return true;
         };
 
-        auto gen_prime = [&](int L, int R) -> int {
-            uniform_int_distribution<int> dist(L, R);
+        auto gen_prime = [&](int min, int max) -> int {
+            uniform_int_distribution<int> dist(min, max);
 
             while(true) {
                 int p = dist(rng);
@@ -138,3 +138,25 @@ private:
         h2 = (h2 * P2 + v2) % M2;
     }
 };
+
+template <typename Iterable>
+vector<int> rabin_karp(const Iterable& text, const Iterable& pattern) {
+    int n = text.size();
+    int m = pattern.size();
+    vector<int> matches;
+
+    if(m == 0 || m > n) return matches;
+
+    auto target_hash = DPPHash::get(pattern);
+    DPPHash text_hash(text);
+
+    for(int i = 0; i < n - m + 1; i++) {
+        auto window_hash = text_hash.get(i, i + m - 1);
+
+        if(window_hash == target_hash) {
+            matches.push_back(i);
+        }
+    }
+
+    return matches;
+}
