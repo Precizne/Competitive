@@ -11,8 +11,8 @@
 
 using namespace std;
 
-template<class T> bool chkmin(T& a, const T& b) { return b < a ? a = b, 1 : 0; }
-template<class T> bool chkmax(T& a, const T& b) { return a < b ? a = b, 1 : 0; }
+template<typename T> bool chkmin(T& a, const T& b) { return b < a ? a = b, 1 : 0; }
+template<typename T> bool chkmax(T& a, const T& b) { return a < b ? a = b, 1 : 0; }
 template<typename T> constexpr T INF = numeric_limits<T>::max() / 2;
 constexpr int MOD = 1e9 + 7;
 constexpr float EPS = 1e-9;
@@ -24,7 +24,7 @@ constexpr float EPS = 1e-9;
 #endif
 
 void zero() {
-    // Do you magic here
+    // Do your magic here
 }
 
 signed main() {
@@ -41,7 +41,7 @@ signed main() {
 #endif
 
     int progress = 1;
-    cin >> progress;
+    // cin >> progress;
     for(int p = 1; p <= progress; p++) {
 #ifndef ONLINE_JUDGE
         cerr << "Case #" << p << ": " << endl;

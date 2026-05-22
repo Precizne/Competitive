@@ -7,7 +7,7 @@ using namespace std;
 // INTERFACE CONTRACT
 // ===================
 // template <typename T>
-// concept IndexableContainer = requires(T a, size_t i) {
+// concept Iterable = requires(T a, size_t i) {
 //     { a.size() } -> convertible_to<size_t>;
 //     { a[i] };
 // };
@@ -17,8 +17,6 @@ using namespace std;
 // ============================================================
 class EntropyHash {
 public:
-    using HashValue = pair<int, int>;
-
     template<typename Iterable>
     explicit EntropyHash(const Iterable& arr) : n(arr.size()) {
         init();
@@ -29,9 +27,9 @@ public:
         PP1.assign(n + 1, 1ll);
         PP2.assign(n + 1, 1ll);
 
-        for(int i = 2; i <= n; i++) {
-            PP1[i] = (PP1[i - 1] * P1) % M1;
-            PP2[i] = (PP2[i - 1] * P2) % M2;
+        for(int i = 1; i <= n; i++) {
+            PP1[i] = (int)(((uint)PP1[i - 1] * P1) % M1);
+            PP2[i] = (int)(((uint)PP2[i - 1] * P2) % M2);
 
             int h1 = H1[i - 1];
             int h2 = H2[i - 1];
@@ -44,43 +42,46 @@ public:
     }
 
     template<typename Iterable>
-    static HashValue get(const Iterable& arr) {
+    static int get(const Iterable& arr) {
         init();
 
         int h1 = 0, h2 = 0;
 
-        for(auto val: arr) {
+        for(auto val : arr) {
             step(h1, h2, val);
         }
 
-        return {h1, h2};
+        return merge(h1, h2);
     }
 
-    HashValue get(int left, int right) const {
+    int get(int left, int right) const {
         left++, right++;
-        if(left > right || left < 1 || right > n) return {0, 0};
+        if(left > right || left < 1 || right > n) return 0;
 
-        int h1 = H1[right] - (H1[left - 1] * PP1[right - left + 1]) % M1;
-        int h2 = H2[right] - (H2[left - 1] * PP2[right - left + 1]) % M2;
+        int h1 = H1[right] - (int)(((uint)H1[left - 1] * PP1[right - left + 1]) % M1);
+        int h2 = H2[right] - (int)(((uint)H2[left - 1] * PP2[right - left + 1]) % M2);
 
         if(h1 < 0) h1 += M1;
         if(h2 < 0) h2 += M2;
 
-        return {h1, h2};
+        return merge(h1, h2);
     }
 
-    HashValue get() const {
+    int get() const {
         return get(0, n - 1);
     }
 
 private:
-    static constexpr int MIN_BASE = 2000000000LL;
-    static constexpr int MAX_BASE = 2140000000LL;
+    static constexpr int OFFSET = 1000000000LL;
 
-    static constexpr int MIN_MOD = 4000000000LL;
-    static constexpr int MAX_MOD = 4290000000LL;
+    static constexpr int MIN_BASE = 2000000000LL;
+    static constexpr int MAX_BASE = 3000000000LL;
+
+    static constexpr int MIN_MOD = 3000000000LL;
+    static constexpr int MAX_MOD = 4000000000LL;
 
     static inline int P1 = 0, P2 = 0, M1 = 0, M2 = 0;
+    static inline uint FIXED_RANDOM = 0;
     static inline bool initialized = false;
 
     vector<int> H1, H2, PP1, PP2;
@@ -89,7 +90,9 @@ private:
     static void init() {
         if(initialized) return;
 
-        mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
+        uint seed = chrono::steady_clock::now().time_since_epoch().count();
+        mt19937_64 rng(seed);
+        FIXED_RANDOM = rng();
 
         auto is_prime = [](int num) -> bool {
             if(num < 2) return false;
@@ -131,14 +134,26 @@ private:
     }
 
     static inline void step(int& h1, int& h2, int val) {
-        int v1 = (val % M1 + M1) % M1;
-        int v2 = (val % M2 + M2) % M2;
+        val += OFFSET;
 
-        h1 = (h1 * P1 + v1) % M1;
-        h2 = (h2 * P2 + v2) % M2;
+        h1 = (int)(((uint)h1 * P1 + val) % M1);
+        h2 = (int)(((uint)h2 * P2 + val) % M2);
+    }
+
+    static int merge(int h1, int h2) {
+        uint x = ((uint)h1 << 32) | (uint)h2;
+
+        return splitmix(x + FIXED_RANDOM);
+    }
+
+    static uint splitmix(uint x) {
+        x += 0x9e3779b97f4a7c15;
+        x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9;
+        x = (x ^ (x >> 27)) * 0x94d049bb133111eb;
+
+        return (x ^ (x >> 31));
     }
 };
-
 
 // ===========================
 // Rabin-Karp String Matching
