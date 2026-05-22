@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include "../../src/main.cpp"
 
 using namespace std;
 
@@ -6,31 +7,31 @@ using namespace std;
 
 class DSU {
 public:
-    int vtx;
-    vector<int> prnt, rank, size;
+    ll vtx;
+    vector<ll> prnt, rank, size;
 
-    DSU(int n) {
+    DSU(ll n) {
         vtx = n;
         make(n);
     }
 
-    void make(int n) {
+    void make(ll n) {
         prnt.resize(n);
         rank.resize(n, 0);
         size.resize(n, 1);
-        for(int i = 0; i < n; i++) {
+        for(ll i = 0; i < n; i++) {
             prnt[i] = i;
         }
     }
 
-    int find(int u) {
+    ll find(ll u) {
         if(u == prnt[u]) {
             return u;
         }
         return prnt[u] = find(prnt[u]);
     }
 
-    void unionRank(int u, int v) {
+    void unionRank(ll u, ll v) {
         u = find(u);
         v = find(v);
         if(u != v) {
@@ -44,7 +45,7 @@ public:
         }
     }
 
-    void unionSize(int u, int v) {
+    void unionSize(ll u, ll v) {
         u = find(u);
         v = find(v);
         if(u != v) {

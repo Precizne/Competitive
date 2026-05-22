@@ -1,21 +1,21 @@
 #include <bits/stdc++.h>
+#include "./main.cpp"
 
 using namespace std;
 
 // Smallest Prime Factor
 
-const int MAXN = 1e6;
-vector<int> spf(MAXN + 1);
-// vector<int> pri;
+vector<ll> spf(MXN + 1);
+// vector<ll> pri;
 
 void sieve() {
-    for(int i = 0; i <= MAXN; i++) {
+    for(ll i = 0; i <= MXN; i++) {
         spf[i] = i;
     }
-    for(int i = 2; i <= MAXN; i++) {
+    for(ll i = 2; i <= MXN; i++) {
         if(spf[i] == i) {
             // pri.push_back(i);
-            for(int j = 2 * i; j <= MAXN; j += i) {
+            for(ll j = 2 * i; j <= MXN; j += i) {
                 spf[j] = min(spf[j], i);
             }
         }
@@ -24,8 +24,8 @@ void sieve() {
 
 // Prime Factorization
 
-vector<int> fvec(int x) {
-    vector<int> f;
+vector<ll> fvec(ll x) {
+    vector<ll> f;
     while(x != 1) {
         f.push_back(spf[x]);
         x /= spf[x];
@@ -33,8 +33,8 @@ vector<int> fvec(int x) {
     return f;
 }
 
-map<int, int> fmap(int x) {
-    map<int, int> f;
+map<ll, ll> fmap(ll x) {
+    map<ll, ll> f;
     while(x != 1) {
     f[spf[x]]++;
         x /= spf[x];
@@ -45,7 +45,7 @@ map<int, int> fmap(int x) {
 // String Tokenizer
 
 vector<string> tokenize(string s, string del = " ") {
-    int start, end = -1 * del.size();
+    ll start, end = -1 * del.size();
     vector<string> strv;
     do {
         start = end + del.size();
@@ -58,34 +58,32 @@ vector<string> tokenize(string s, string del = " ") {
 
 // Modulus Functions
 
-const int MOD = 1e9 + 7;
-
-inline int gcdext(int a, int b, int* p, int* q) {
+inline ll gcdext(ll a, ll b, ll* p, ll* q) {
     if(a == 0) {
         *p = 0;
         *q = 1;
         return b;
     }
-    int c, d;
-    int g = gcdext(b % a, a, &c, &d);
+    ll c, d;
+    ll g = gcdext(b % a, a, &c, &d);
     *p = d - (b / a) * c;
     *q = c;
     return g;
 }
 
-inline int modsum(int a, int b) {
+inline ll modsum(ll a, ll b) {
     return ((a + b) % MOD + MOD) % MOD;
 }
 
-inline int modpro(int a, int b) {
+inline ll modpro(ll a, ll b) {
     return (((a % MOD) * (b % MOD)) % MOD + MOD) % MOD;
 }
 
-inline int modexp(int a, int n) {
+inline ll modexp(ll a, ll n) {
     if(n == 0) {
         return 1;
     }
-    int b= modexp(a, n / 2);
+    ll b= modexp(a, n / 2);
     b = modpro(b, b);
     if(n & 1) {
         b = modpro(a, b);
@@ -93,9 +91,9 @@ inline int modexp(int a, int n) {
     return (b % MOD + MOD) % MOD;
 }
 
-inline int modinv(int a) {
-    int b, c;
-    int g = gcdext(a, MOD, &b, &c);
+inline ll modinv(ll a) {
+    ll b, c;
+    ll g = gcdext(a, MOD, &b, &c);
     if(g != 1) {
         cerr << "ERROR: GCD DOESN'T EXIST!!! VERIFY CODE!!!" << endl;
         return 0;
@@ -105,16 +103,16 @@ inline int modinv(int a) {
 
 // Combinatorics
 
-vector<int> fact(MAXN + 1, 0ll);
+vector<ll> fact(MXN + 1, 0ll);
 
 void prec() {
     fact[0] = 1;
-    for(int i = 1; i <= MAXN; i++) {
+    for(ll i = 1; i <= MXN; i++) {
         fact[i] = modpro(fact[i - 1], i);
     }
 }
 
-inline int nCr(int n, int r) {
+inline ll nCr(ll n, ll r) {
     if(n < 0 || r < 0 || n < r) {
         cerr << "ERROR: COMB DOESN'T EXIST!!! VERIFY CODE!!!" << endl;
         return 0;
@@ -132,13 +130,13 @@ inline int nCr(int n, int r) {
 
 // Manacher Algorithm
 
-vector<int> manacher_odd(string s) {
-    int n = s.size();
+vector<ll> manacher_odd(string s) {
+    ll n = s.size();
     s = "$" + s + "^";
-    vector<int> p(n + 2);
-    int l = 1, r = 1;
-    for(int i = 1; i <= n; i++) {
-        p[i] = max(0, min(r - i, p[l + (r - i)]));
+    vector<ll> p(n + 2);
+    ll l = 1, r = 1;
+    for(ll i = 1; i <= n; i++) {
+        p[i] = max(0ll, min(r - i, p[l + (r - i)]));
         while(s[i - p[i]] == s[i + p[i]]) {
             p[i]++;
         }
@@ -147,16 +145,16 @@ vector<int> manacher_odd(string s) {
             r = i + p[i];
         }
     }
-    return vector<int>(begin(p) + 1, end(p) - 1);
+    return vector<ll>(begin(p) + 1, end(p) - 1);
 }
 
-vector<int> manacher(string s) {
+vector<ll> manacher(string s) {
     string t;
     for(auto c: s) {
         t += string("#") + c;
     }
     auto res = manacher_odd(t + "#");
-    return vector<int>(begin(res) + 1, end(res) - 1);
+    return vector<ll>(begin(res) + 1, end(res) - 1);
 }
 
 // n - Dimension Vector
@@ -175,7 +173,7 @@ auto vec(size_t n, Args&&... args) {
 #include <ext/pb_ds/tree_policy.hpp> 
 using namespace __gnu_pbds; 
 
-#define ordered_set tree<int, null_type,less<int>, rb_tree_tag,tree_order_statistics_node_update>
+#define ordered_set tree<ll, null_type,less<ll>, rb_tree_tag,tree_order_statistics_node_update>
 
 // FFT
 
@@ -183,25 +181,25 @@ const double PI = acos(-1);
 typedef complex<double> cd;
 namespace fft {
     void dft(vector<cd> &a, bool invert) {
-        int n = a.size();
-        vector<int> rev(n);
-        for(int i = 0, j = 0; i < n; i++) {
+        ll n = a.size();
+        vector<ll> rev(n);
+        for(ll i = 0, j = 0; i < n; i++) {
             if(i < j) {
                 swap(a[i], a[j]);
             }
-            int bit = n >> 1;
+            ll bit = n >> 1;
             while(j & bit) {
                 j ^= bit;
                 bit >>= 1;
             }
             j ^= bit;
         }
-        for(int len = 2; len <= n; len <<= 1) {
+        for(ll len = 2; len <= n; len <<= 1) {
             double angle = 2 * PI / len * (invert ? -1 : 1);
             cd wlen(cos(angle), sin(angle));
-            for(int i = 0; i < n; i += len) {
+            for(ll i = 0; i < n; i += len) {
                 cd w(1);
-                for(int j = 0; j < len / 2; j++) {
+                for(ll j = 0; j < len / 2; j++) {
                     cd u = a[i + j], v = a[i + j + len / 2] * w;
                     a[i + j] = u + v;
                     a[i + j + len / 2] = u - v;
@@ -218,20 +216,20 @@ namespace fft {
         dft(a, true);
     }
 
-    vector<int> convolve(vector<int> const &a, vector<int> const &b) {
+    vector<ll> convolve(vector<ll> const &a, vector<ll> const &b) {
         vector<cd> fa(a.begin(), a.end()), fb(b.begin(), b.end());
-        int n = 1;
-        while (n < (int)a.size() + (int)b.size()) n *= 2;
+        ll n = 1;
+        while (n < (ll)a.size() + (ll)b.size()) n *= 2;
         fa.resize(n);
         fb.resize(n);
         dft(fa, false);
         dft(fb, false);
-        for(int i = 0; i < n; i++) {
+        for(ll i = 0; i < n; i++) {
             fa[i] *= fb[i];
         }
         idft(fa);
-        vector<int> result(n);
-        for(int i = 0; i < n; i++) {
+        vector<ll> result(n);
+        for(ll i = 0; i < n; i++) {
             result[i] = round(fa[i].real());
         }
         return result;
@@ -240,11 +238,11 @@ namespace fft {
 
 // Z Algorithm
 
-vector<int> zfunc(string s) {
-    int n = s.size();
-    vector<int> z(n);
-    int l = 0, r = 0;
-    for(int i = 1; i < n; i++) {
+vector<ll> zfunc(string s) {
+    ll n = s.size();
+    vector<ll> z(n);
+    ll l = 0, r = 0;
+    for(ll i = 1; i < n; i++) {
         if(i <= r) {
             z[i] = min(r - i + 1, z[i - l]);
         }
@@ -261,11 +259,11 @@ vector<int> zfunc(string s) {
 
 // KMP Algorithm
 
-vector<int> pfunc(string s) {
-    int n = s.size();
-    vector<int> p(n);
-    for(int i = 1; i < n; i++) {
-        int j = p[i - 1];
+vector<ll> pfunc(string s) {
+    ll n = s.size();
+    vector<ll> p(n);
+    for(ll i = 1; i < n; i++) {
+        ll j = p[i - 1];
         while(j > 0 && s[i] != s[j]) {
             j = p[j - 1];
         }
@@ -277,12 +275,12 @@ vector<int> pfunc(string s) {
     return p;
 }
 
-vector<int> kmp(string text, string pat) {
+vector<ll> kmp(string text, string pat) {
     string s = pat + "#" + text;
-    vector<int> p = pfunc(s);
-    vector<int> idx;
-    int m = pat.size();
-    for(int i = m + 1; i < (int)s.size(); i++) {
+    vector<ll> p = pfunc(s);
+    vector<ll> idx;
+    ll m = pat.size();
+    for(ll i = m + 1; i < (ll)s.size(); i++) {
         if(p[i] == m) {
             idx.push_back(i - 2 * m);
         }
