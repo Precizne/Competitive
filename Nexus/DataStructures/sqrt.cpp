@@ -118,12 +118,12 @@ private:
     vector<Lazy> lazy;
 
     inline void push(ll b) {
-        if (lazy[b] == Lazy::identity()) return;
+        if(lazy[b] == Lazy::identity()) return;
 
         ll start = b * B;
         ll end = min(n, start + B);
 
-        for (ll i = start; i < end; i++) {
+        for(ll i = start; i < end; i++) {
             Config::applyPartial(elements[i], lazy[b]);
         }
 
@@ -172,7 +172,7 @@ struct RAFQ {
     static BlockData build(const vector<Element>& arr, ll start, ll end) {
         BlockData b;
 
-        for (ll i = start; i < end; i++) {
+        for(ll i = start; i < end; i++) {
             b.freq[arr[i]]++;
         }
 
@@ -188,10 +188,10 @@ struct RAFQ {
     }
 
     static QueryAns queryFull(const BlockData& b, const Lazy& curLazy, const QueryParam& target) {
-        ll adjusted_target = target - curLazy.add;
-        auto it = b.freq.find(adjusted_target);
+        ll ntarget = target - curLazy.add;
 
-        if (it != b.freq.end()) {
+        auto it = b.freq.find(ntarget);
+        if(it != b.freq.end()) {
             return QueryAns{it->second};
         }
 
@@ -199,7 +199,7 @@ struct RAFQ {
     }
 
     static QueryAns queryPartial(const Element& elem, const Lazy& curLazy, const QueryParam& target) {
-        if (elem + curLazy.add == target) return QueryAns{1};
+        if(elem + curLazy.add == target) return QueryAns{1};
 
         return QueryAns{0};
     }
