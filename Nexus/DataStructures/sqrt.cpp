@@ -24,9 +24,9 @@ using namespace std;
 //     { T::mergeAns(qa, qa) } -> same_as<typename T::QueryAns>;
 // };
 
-// =========================
+// ========================
 // CORE SQRT DECOMP ENGINE
-// =========================
+// ========================
 template<class Config>
 class SqrtDecomp {
     using Element = typename Config::Element;
