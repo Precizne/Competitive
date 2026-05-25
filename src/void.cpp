@@ -177,64 +177,138 @@ using namespace __gnu_pbds;
 
 // FFT
 
+namespace fft {
+
 const double PI = acos(-1);
 typedef complex<double> cd;
-namespace fft {
-    void dft(vector<cd> &a, bool invert) {
-        ll n = a.size();
-        vector<ll> rev(n);
-        for(ll i = 0, j = 0; i < n; i++) {
-            if(i < j) {
-                swap(a[i], a[j]);
-            }
-            ll bit = n >> 1;
-            while(j & bit) {
-                j ^= bit;
-                bit >>= 1;
-            }
+
+void dft(vector<cd> &a, bool invert) {
+    ll n = a.size();
+    vector<ll> rev(n);
+    for(ll i = 0, j = 0; i < n; i++) {
+        if(i < j) {
+            swap(a[i], a[j]);
+        }
+        ll bit = n >> 1;
+        while(j & bit) {
             j ^= bit;
+            bit >>= 1;
         }
-        for(ll len = 2; len <= n; len <<= 1) {
-            double angle = 2 * PI / len * (invert ? -1 : 1);
-            cd wlen(cos(angle), sin(angle));
-            for(ll i = 0; i < n; i += len) {
-                cd w(1);
-                for(ll j = 0; j < len / 2; j++) {
-                    cd u = a[i + j], v = a[i + j + len / 2] * w;
-                    a[i + j] = u + v;
-                    a[i + j + len / 2] = u - v;
-                    w *= wlen;
-                }
+        j ^= bit;
+    }
+    for(ll len = 2; len <= n; len <<= 1) {
+        double angle = 2 * PI / len * (invert ? -1 : 1);
+        cd wlen(cos(angle), sin(angle));
+        for(ll i = 0; i < n; i += len) {
+            cd w(1);
+            for(ll j = 0; j < len / 2; j++) {
+                cd u = a[i + j], v = a[i + j + len / 2] * w;
+                a[i + j] = u + v;
+                a[i + j + len / 2] = u - v;
+                w *= wlen;
             }
         }
-        if(invert) {
-            for(cd &x : a) x /= n;
-        }
     }
-
-    void idft(vector<cd> &a) {
-        dft(a, true);
-    }
-
-    vector<ll> convolve(vector<ll> const &a, vector<ll> const &b) {
-        vector<cd> fa(a.begin(), a.end()), fb(b.begin(), b.end());
-        ll n = 1;
-        while (n < (ll)a.size() + (ll)b.size()) n *= 2;
-        fa.resize(n);
-        fb.resize(n);
-        dft(fa, false);
-        dft(fb, false);
-        for(ll i = 0; i < n; i++) {
-            fa[i] *= fb[i];
-        }
-        idft(fa);
-        vector<ll> result(n);
-        for(ll i = 0; i < n; i++) {
-            result[i] = round(fa[i].real());
-        }
-        return result;
+    if(invert) {
+        for(cd &x : a) x /= n;
     }
 }
+
+void idft(vector<cd> &a) {
+    dft(a, true);
+}
+
+vector<ll> convolve(vector<ll> const &a, vector<ll> const &b) {
+    vector<cd> fa(a.begin(), a.end()), fb(b.begin(), b.end());
+    ll n = 1;
+    while (n < (ll)a.size() + (ll)b.size()) n *= 2;
+    fa.resize(n);
+    fb.resize(n);
+    dft(fa, false);
+    dft(fb, false);
+    for(ll i = 0; i < n; i++) {
+        fa[i] *= fb[i];
+    }
+    idft(fa);
+    vector<ll> result(n);
+    for(ll i = 0; i < n; i++) {
+        result[i] = round(fa[i].real());
+    }
+    return result;
+}
+
+} // namespace fft;
+
+// NTT
+
+namespace ntt {
+
+const ll ROOT = 3;
+
+void dft(vector<ll> &a, bool invert) {
+    ll n = a.size();
+    for(ll i = 0, j = 0; i < n; i++) {
+        if(i < j) {
+            swap(a[i], a[j]);
+        }
+        ll bit = n >> 1;
+        while(j & bit) {
+            j ^= bit;
+            bit >>= 1;
+        }
+        j ^= bit;
+    }
+
+    for(ll len = 2; len <= n; len <<= 1) {
+        ll wlen = modexp(ROOT, (MOD - 1) / len);
+        if(invert) {
+            wlen = modinv(wlen);
+        }
+        for(ll i = 0; i < n; i += len) {
+            ll w = 1;
+            for(ll j = 0; j < len / 2; j++) {
+                ll u = a[i + j];
+                ll v = (a[i + j + len / 2] * w) % MOD;
+
+                a[i + j] = (u + v < MOD ? u + v : u + v - MOD);
+                a[i + j + len / 2] = (u - v >= 0 ? u - v : u - v + MOD);
+
+                w = (w * wlen) % MOD;
+            }
+        }
+    }
+
+    if(invert) {
+        ll n_inv = modinv(n);
+        for(ll &x : a) {
+            x = (x * n_inv) % MOD;
+        }
+    }
+}
+
+void idft(vector<ll> &a) {
+    dft(a, true);
+}
+
+vector<ll> convolve(vector<ll> const &a, vector<ll> const &b) {
+    vector<ll> fa(a.begin(), a.end()), fb(b.begin(), b.end());
+    ll n = 1;
+    while(n < (ll)a.size() + (ll)b.size()) n *= 2;
+    fa.resize(n);
+    fb.resize(n);
+
+    dft(fa, false);
+    dft(fb, false);
+
+    for(ll i = 0; i < n; i++) {
+        fa[i] = (fa[i] * fb[i]) % MOD;
+    }
+
+    idft(fa);
+    return fa;
+}
+
+} // namespace ntt;
 
 // Z Algorithm
 

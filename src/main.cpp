@@ -17,7 +17,7 @@ template<typename T> bool chkmax(T& a, const T& b) { return a < b ? a = b, 1 : 0
 template<typename T> constexpr T INF = numeric_limits<T>::max() / 2;
 
 constexpr ll MOD = 1e9 + 7;
-constexpr ll MXN = 1e6 + 5;
+constexpr ll MXN = 2e6 + 10;
 constexpr ld EPS = 1e-9;
 
 #ifndef ONLINE_JUDGE
@@ -27,7 +27,6 @@ constexpr ld EPS = 1e-9;
 #endif
 
 void zero() {
-    // Do your magic here
 }
 
 int main() {
